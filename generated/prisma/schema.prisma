@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model asiento {
+  id_asiento      Int               @id @default(autoincrement())
+  id_recinto      Int
+  fila            Int
+  numero          Int
+  tipo            String?           @db.VarChar(50)
+  recinto         recinto           @relation(fields: [id_recinto], references: [id_recinto], onDelete: Cascade)
+  reserva_asiento reserva_asiento[]
+}
+
+model bitacora {
+  id_bitacora Int       @id @default(autoincrement())
+  id_reserva  Int?
+  accion      String    @db.VarChar(100)
+  fecha       DateTime? @default(now()) @db.Timestamp(6)
+  descripcion String?
+  reserva     reserva?  @relation(fields: [id_reserva], references: [id_reserva])
+}
+
+model cliente {
+  id_cliente Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(100)
+  correo     String    @unique @db.VarChar(100)
+  telefono   String?   @db.VarChar(20)
+  reserva    reserva[]
+}
+
+model evento {
+  id_evento     Int       @id @default(autoincrement())
+  nombre_evento String    @db.VarChar(100)
+  descripcion   String?
+  fecha         DateTime  @db.Date
+  hora          DateTime  @db.Time(6)
+  id_recinto    Int
+  recinto       recinto   @relation(fields: [id_recinto], references: [id_recinto], onDelete: Cascade)
+  reserva       reserva[]
+}
+
+model recinto {
+  id_recinto Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(100)
+  ubicacion  String    @db.VarChar(150)
+  capacidad  Int
+  asiento    asiento[]
+  evento     evento[]
+}
+
+model reserva {
+  id_reserva      Int               @id @default(autoincrement())
+  id_cliente      Int
+  id_evento       Int
+  fecha_reserva   DateTime?         @default(now()) @db.Timestamp(6)
+  estado_reserva  String            @db.VarChar(50)
+  bitacora        bitacora[]
+  cliente         cliente           @relation(fields: [id_cliente], references: [id_cliente], onDelete: Cascade)
+  evento          evento            @relation(fields: [id_evento], references: [id_evento], onDelete: Cascade)
+  reserva_asiento reserva_asiento[]
+}
+
+model reserva_asiento {
+  id_reserva_asiento Int     @id @default(autoincrement())
+  id_reserva         Int
+  id_asiento         Int
+  asiento            asiento @relation(fields: [id_asiento], references: [id_asiento], onDelete: Cascade)
+  reserva            reserva @relation(fields: [id_reserva], references: [id_reserva], onDelete: Cascade)
+
+  @@unique([id_reserva, id_asiento])
+}

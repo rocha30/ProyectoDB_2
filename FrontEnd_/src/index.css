@@ -1,0 +1,184 @@
+/* CSS de Home 
+TOMAR EN CUENTA: estilos de cosas en TODA la página */
+
+:root {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  line-height: 0.5;
+  font-weight: 250;
+}
+
+@font-face {
+  font-family: 'Folio Bold Extended BQ';
+  src: url('./fonts/FolioBQ-BoldExtended.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Folio Bold Extended BQ', sans-serif;
+}
+
+/* Fondo Concierto */
+.background {
+  background-image: url('./assets/concierto_playa.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cuadro azul */
+.overlay-box {
+  background-color: rgba(255, 175, 83, 0.8); /* naranja semitransparente */
+  color: white;
+  padding: 12vw;
+  border-radius: 10px;
+  text-align: left;
+  padding-left: 5.0rem;
+  padding-right: 15.0rem;
+  max-width: 600px;
+  position: relative;
+}
+
+.title-line {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 1vw;
+  font-size: clamp(3rem, 8vw, 4rem);
+}
+
+.title-line h1 {
+  margin: 0;
+}
+
+.year {
+  font-weight: bold;
+  line-height: 1.0;
+  font-size: clamp(3rem, 8.5vw, 10rem);
+
+  background: linear-gradient(90deg, #FFA500, #FF4500); /* naranja a rojo */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Para compatibilidad adicional */
+  background-clip: text;
+  color: transparent;
+}
+
+.form {
+  width: 400px;
+  margin: 0 auto;
+}
+
+/* Botón */
+input[type="button"],
+button {
+  position: absolute;
+  bottom: 5%;
+  right: 40%;
+  padding: 1.4vw 3.5vw;  
+  min-width: 120px;
+  max-width: 210px;  
+  border: none;
+  border-radius: 10px;
+  background-color: #111a3f;
+  color: white;
+  font-size: clamp(1.2rem, 2vw, 1.5rem); 
+  font-family: 'Folio Bold Extended BQ', Arial, Helvetica, sans-serif;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Transition botón */
+button:hover {
+  background-color: #f0f0f0;
+  color:#111a3f;
+  transform: scale(1.05);
+}
+
+
+/* OTROS ESTILOS */
+nav {
+  display: none;
+}
+
+nav ul {
+  display: none;
+}
+
+nav ul li {
+  display: none;
+}
+
+a {
+  color: rgb(97, 28, 161);
+  text-decoration: none;
+}
+
+.dashboard {
+  width: 500px;
+  margin: auto;
+}
+
+.errorMessage {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+}
+
+/* Adaptación pantallas */
+@media (max-width: 768px) {
+  .overlay-box {
+    width: 95%;
+    padding: 8vw;
+  }
+
+  .overlay-box h1 {
+    font-size: 2.5rem;
+  }
+
+  .overlay-box p {
+    font-size: 1.5rem;
+  }
+
+  input[type="button"],
+  button {
+    position: static;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  input[type="button"],
+  button {
+    position: static;  /* 📌 Elimina la posición absoluta en móviles */
+    width: 100%;  /* 📌 Ocupa todo el ancho disponible */
+    padding: 12px 20px;
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 20px; /* 📌 Espacio extra para que no se junte con otros elementos */
+  }
+
+  .overlay-box::before {
+    bottom: -5vh;  /* 📌 Menos espacio para pantallas pequeñas */
+    right: -5vw;
+    width: 90%;
+    height: 50%;
+    border: 2px solid white; /* 📌 Reduce el grosor de la línea */
+    border-radius: 10px;
+  }
+}

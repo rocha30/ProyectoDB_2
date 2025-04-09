@@ -12,15 +12,6 @@ INSERT INTO Evento (nombre_evento, descripcion, fecha, hora, id_recinto) VALUES
 INSERT INTO Asiento (id_recinto, fila, numero, tipo) VALUES
 (1, 1, 1, 'VIP'),
 (1, 1, 2, 'VIP'),
-(1, 2, 1, 'General'),
-(1, 2, 2, 'General'),
--- (Se continúan insertando hasta completar 20 asientos)
-(1, 5, 4, 'General');
-
-truncate table Asiento cascade; 
-INSERT INTO Asiento (id_recinto, fila, numero, tipo) VALUES
-(1, 1, 1, 'VIP'),
-(1, 1, 2, 'VIP'),
 (1, 1, 3, 'VIP'),
 (1, 2, 1, 'General'),
 (1, 2, 2, 'General'),
