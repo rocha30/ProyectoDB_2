@@ -67,52 +67,79 @@ export async function ObtenerReservas(req, res) {
  */
 
 export async function reservarAsiento(req, res) {
-    const {idAsiento, idCliente, idEvento, isolationLevel} = req.body;
-
+    const { idAsiento, idCliente, idEvento, isolationLevel } = req.body;
+  
     try {
-        await prisma.$transaction(async (tx)=>{
-            const asientosReservado = await tx.reserva_asiento.findFirst({
-                where:{id_asiento: idAsiento},
-
+      let reservaExitosa = false;
+      let nuevaReservaId = null;
+  
+      await prisma.$transaction(async (tx) => {
+        const asientoReservado = await tx.reserva_asiento.findFirst({
+          where: { id_asiento: idAsiento }
         });
-        
-        if (asientosReservado) {
-            console.log('Asiento ${idAsiento} ya reservado');
-            throw new Error('Asiento ya reservado');
+  
+        if (asientoReservado) {
+          console.log(`🛑 Asiento ${idAsiento} ya está reservado`);
+          throw new Error('Asiento ya reservado');
         }
-
-        //crear la reserva 
+  
         const nuevaReserva = await tx.reserva.create({
-            data: {
-                id_cliente: idCliente,
-                id_evento: idEvento,
-                fecha_reserva: new Date(),
-                estado_reserva: 'pendiente',
-            },
+          data: {
+            id_cliente: idCliente,
+            id_evento: idEvento,
+            fecha_reserva: new Date(),
+            estado_reserva: 'pendiente'
+          },
         });
-
+  
         await tx.reserva_asiento.create({
-            data: {
-                id_asiento: idAsiento,
-                id_reserva: nuevaReserva.id_reserva,
-            },
+          data: {
+            id_reserva: nuevaReserva.id_reserva,
+            id_asiento: idAsiento,
+          },
         });
-
-        console.log('Reserva exitosa - Cliente ${idCliente} - Evento ${idEvento} - Asiento ${idAsiento}');
-    },{
-        isolationLevel: isolationLevel || 'ReadCommitted', //valor por defecto por si no se especifica
-    });
-
-    res.status(200).json({ message: 'Reserva exitosa' });
-
-    }catch (error) {
-        console.error('Error reservando asiento:', error);
-        res.status(500).json({ error: 'Error reservando asiento' });
+  
+        reservaExitosa = true;
+        nuevaReservaId = nuevaReserva.id_reserva;
+      }, {
+        isolationLevel: isolationLevel || 'ReadCommitted',
+      });
+  
+      // ✅ Registrar en bitácora después de la transacción
+      await prisma.bitacora.create({
+        data: {
+          id_reserva: nuevaReservaId,
+          accion: 'Reserva exitosa',
+          descripcion: `Cliente ${idCliente} reservó el asiento ${idAsiento}`
+        },
+      });
+  
+      return res.status(200).json({ mensaje: 'Reserva completada' });
+  
+    } catch (error) {
+      console.error('Error en la reserva:', error.message);
+  
+      // ✅ Registrar error en bitácora
+      await prisma.bitacora.create({
+        data: {
+          id_reserva: null,
+          accion: 'Error en reserva',
+          descripcion: `Cliente ${idCliente} falló al reservar el asiento ${idAsiento}: ${error.message}`
+        },
+      });
+  
+      if (!res.headersSent) {
+        return res.status(400).json({ error: error.message });
+      }
     }
+  }
+  
+
+  
 
 
-}
 
+//
 
 
 
