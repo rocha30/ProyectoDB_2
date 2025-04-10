@@ -16,6 +16,7 @@ export default function Asignacion() {
   const precioRecintos: Record<string, number> = {
     A: 250,
     B: 150,
+    C: 75,
   };
 
   // Función para asignar el precio del recinto al presionar el botón 'Obtener'
@@ -73,7 +74,7 @@ export default function Asignacion() {
             <div className="recinto">
               <p>Recinto A</p>
               <button
-                className="btn-obtener1"
+                className=" btn-obtener btn-obtener1"
                 onClick={() => asignarRecinto("A")}
               >
                 Obtener
@@ -84,13 +85,24 @@ export default function Asignacion() {
             <div className="recinto">
               <p>Recinto B</p>
               <button
-                className="btn-obtener2"
+                className="btn-obtener  btn-obtener2"
                 onClick={() => asignarRecinto("B")}
               >
                 Obtener
               </button>
             </div>
             <p className="precio">Q150</p>
+
+            <div className="recinto">
+              <p>Recinto C</p>
+              <button
+                className="btn-obtener btn-obtener3"
+                onClick={() => asignarRecinto("C")}
+              >
+                Obtener
+              </button>
+            </div>
+            <p className="precio">Q75</p>
           </div>
         </div>
       </div>
