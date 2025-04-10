@@ -1,13 +1,14 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import reservaRoutes from './src/routes/reserva.routes.js';
 
-const prisma = new PrismaClient();
 const app = express();
 const port = 3010;
 
-// Middleware para parsear JSON
 app.use(express.json());
 
+// ✅ Usamos las rutas de reserva
+app.use('/api', reservaRoutes);
 
-//Endpoint para obtener datos. 
-app.get()
+app.listen(port, () => {
+  console.log(`Servidor escuchando en el puerto ${port} 🚀`);
+});

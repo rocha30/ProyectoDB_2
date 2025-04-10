@@ -73,5 +73,6 @@ model reserva_asiento {
   asiento            asiento @relation(fields: [id_asiento], references: [id_asiento], onDelete: Cascade)
   reserva            reserva @relation(fields: [id_reserva], references: [id_reserva], onDelete: Cascade)
 
-  @@unique([id_reserva, id_asiento])
+  @@unique([id_asiento]) // ✅ Restricción única por asiento
 }
+
