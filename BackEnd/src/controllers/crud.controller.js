@@ -67,76 +67,80 @@ export async function ObtenerReservas(req, res) {
  */
 
 export async function reservarAsiento(req, res) {
-    const { idAsiento, idCliente, idEvento, isolationLevel } = req.body;
+  const { idAsiento, idCliente, idEvento, isolationLevel } = req.body;
+
+  console.log('Datos recibidos:', req.body);
   
-    try {
-      let reservaExitosa = false;
-      let nuevaReservaId = null;
-  
-      await prisma.$transaction(async (tx) => {
-        const asientoReservado = await tx.reserva_asiento.findFirst({
-          where: { id_asiento: idAsiento }
-        });
-  
-        if (asientoReservado) {
-          console.log(`🛑 Asiento ${idAsiento} ya está reservado`);
-          throw new Error('Asiento ya reservado');
-        }
-  
-        const nuevaReserva = await tx.reserva.create({
-          data: {
-            id_cliente: idCliente,
-            id_evento: idEvento,
-            fecha_reserva: new Date(),
-            estado_reserva: 'pendiente'
-          },
-        });
-  
-        await tx.reserva_asiento.create({
-          data: {
-            id_reserva: nuevaReserva.id_reserva,
-            id_asiento: idAsiento,
-          },
-        });
-  
-        reservaExitosa = true;
-        nuevaReservaId = nuevaReserva.id_reserva;
-      }, {
-        isolationLevel: isolationLevel || 'ReadCommitted',
+  if (!idAsiento || !idCliente || !idEvento) {
+    return res.status(400).json({ error: 'Faltan parámetros necesarios' });
+  }
+
+  try {
+    let reservaExitosa = false;
+    let nuevaReservaId = null;
+
+    await prisma.$transaction(async (tx) => {
+      const asientoReservado = await tx.reserva_asiento.findFirst({
+        where: { 
+          id_asiento: idAsiento
+         }
       });
-  
-      // ✅ Registrar en bitácora después de la transacción
-      await prisma.bitacora.create({
-        data: {
-          id_reserva: nuevaReservaId,
-          accion: 'Reserva exitosa',
-          descripcion: `Cliente ${idCliente} reservó el asiento ${idAsiento}`
-        },
-      });
-  
-      return res.status(200).json({ mensaje: 'Reserva completada' });
-  
-    } catch (error) {
-      console.error('Error en la reserva:', error.message);
-  
-      // ✅ Registrar error en bitácora
-      await prisma.bitacora.create({
-        data: {
-          id_reserva: null,
-          accion: 'Error en reserva',
-          descripcion: `Cliente ${idCliente} falló al reservar el asiento ${idAsiento}: ${error.message}`
-        },
-      });
-  
-      if (!res.headersSent) {
-        return res.status(400).json({ error: error.message });
+
+      if (asientoReservado) {
+        console.log('🛑 Asiento ${idAsiento} ya está reservado');
+        throw new Error('Asiento ya reservado');
       }
+
+      const nuevaReserva = await tx.reserva.create({
+        data: {
+          id_cliente: idCliente,
+          id_evento: idEvento,
+          fecha_reserva: new Date(),
+          estado_reserva: 'pendiente'
+        },
+      });
+
+      await tx.reserva_asiento.create({
+        data: {
+          id_reserva: nuevaReserva.id_reserva,
+          id_asiento: idAsiento,
+        },
+      });
+
+      reservaExitosa = true;
+      nuevaReservaId = nuevaReserva.id_reserva;
+    }, {
+      isolationLevel: isolationLevel || 'ReadCommitted',
+    });
+
+    // ✅ Registrar en bitácora después de la transacción
+    await prisma.bitacora.create({
+      data: {
+        id_reserva: nuevaReservaId,
+        accion: 'Reserva exitosa',
+        descripcion: 'Cliente ${idCliente} reservó el asiento ${idAsiento}'
+      },
+    });
+
+    return res.status(200).json({ mensaje: 'Reserva completada' });
+
+  } catch (error) {
+    console.error('Error en la reserva:', error.message);
+
+    // ✅ Registrar error en bitácora
+    await prisma.bitacora.create({
+      data: {
+        id_reserva: null,
+        accion: 'Error en reserva',
+        descripcion: 'Cliente ${idCliente} falló al reservar el asiento ${idAsiento}: ${error.message}'
+      },
+    });
+
+    if (!res.headersSent) {
+      return res.status(400).json({ error: error.message });
     }
   }
-  
-
-  
-
+}
 
 
 //

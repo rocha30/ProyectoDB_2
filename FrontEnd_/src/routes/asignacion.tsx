@@ -7,11 +7,12 @@ export default function Asignacion() {
 
   // Estado para los datos de la reserva
   const [recintoSeleccionado, setRecintoSeleccionado] = useState<string | null>(null);
-  const [fila, setFila] = useState("Fila 1");
+  const [fila, setFila] = useState("1");
   const [numero, setNumero] = useState("Número 1");
   const [tipo, setTipo] = useState("General");
   const [total, setTotal] = useState(0); // Total de la reserva
 
+  
   // Precio por defecto
   const precioRecintos: Record<string, number> = {
     A: 250,
@@ -43,6 +44,8 @@ export default function Asignacion() {
       precio += 30;
     } else if (fila === "Fila 2") {
       precio += 20;
+    } else if (fila === "Fila 3") {
+      precio += 10;
     }
   
     setTotal(precio);
@@ -61,13 +64,13 @@ export default function Asignacion() {
       {/* Evento */}
       <div className="evento-card">
         <div className="fecha-box">
-          <p>ABR</p>
-          <p>15</p>
+          <p>MAR</p>
+          <p>28</p>
         </div>
 
         <div className="evento-detalles">
           <h2>ULTRA MIAMI</h2>
-          <p>Abril 15, 2025 </p>
+          <p>Marzo 28, 2025 </p>
           <p> Un lugar genial</p>
 
           <div className="recintos">
@@ -115,11 +118,17 @@ export default function Asignacion() {
             <option>Fila 1</option>
             <option>Fila 2</option>
             <option>Fila 3</option>
+            <option>Fila 4</option>
+            <option>Fila 5</option>
+            <option>Fila 6</option>
+            <option>Fila 7</option>
           </select>
           <select value={numero} onChange={(e) => setNumero(e.target.value)}>
-            <option>Número 1</option>
-            <option>Número 2</option>
-            <option>Número 3</option>
+            <option>Asiento 1</option>
+            <option>Asiento 2</option>
+            <option>Asiento 3</option>
+            <option>Asiento 4</option>
+            <option>Asiento 5</option>
           </select>
           <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
             <option>General</option>
@@ -148,6 +157,11 @@ export default function Asignacion() {
               <td>Q150</td>
             </tr>
             <tr>
+              <td>Recinto C</td>
+              <td>Q75</td>
+            </tr>
+            <p></p>
+            <tr>
               <td>Fila 1</td>
               <td>+Q30</td>
             </tr>
@@ -157,8 +171,13 @@ export default function Asignacion() {
             </tr>
             <tr>
               <td>Fila 3</td>
+              <td>+Q10</td>
+            </tr>
+            <tr>
+              <td>Fila 4-7</td>
               <td>+Q0</td>
             </tr>
+            <p></p>
             <tr>
               <td>Tipo VIP</td>
               <td>+Q50</td>
@@ -185,12 +204,12 @@ export default function Asignacion() {
             navigate("/reservas", {
               state: {
                 idUsuario: 1, // o el ID real del usuario logueado
-                idEvento: 2,
+                idEvento: 1,
                 fila,
                 numero,
                 tipo,
                 total,
-                recinto: recintoSeleccionado, // Pasamos el recinto seleccionado también
+                recinto: recintoSeleccionado, 
               },
             })
           }

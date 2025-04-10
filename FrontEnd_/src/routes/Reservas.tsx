@@ -8,43 +8,43 @@ export default function Reservas() {
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
 
-
   // Por si querés ver en consola qué viene
   console.log("Datos recibidos:", state);
 
   // Función para manejar el envío de la reserva
   const handleReservar = async (e: React.FormEvent) => {
-  e.preventDefault(); // Prevenir el reload por el submit del form
+    e.preventDefault(); // Evitar recarga
+  
+    // 🔢 Convertir "Número 1" a 1
+    const idAsiento = parseInt(state.numero.replace("Asiento ", ""));
+  
+    const reserva = {
+      idAsiento,
+      idCliente: state.idUsuario,
+      idEvento: state.idEvento,
+      isolationLevel: "ReadCommitted"
+    };
+  
+    try {
+      const res = await fetch("http://localhost:3010/api/reservar-asiento", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reserva),
+      });
 
-  const reserva = {
-    idUsuario: state.idUsuario,
-    idEvento: state.idEvento,
-    fila: state.fila,
-    numero: state.numero,
-    tipo: state.tipo,
-    total: state.total,
-    nombre,
-    correo,
-    telefono,
+      if (!res.ok) {
+        throw new Error("Error al procesar la reserva");
+      }
+
+      const data = await res.json();
+      alert(data.mensaje || "Reserva completada 🎉");
+    } catch (err) {
+      console.error("Error al reservar", err);
+      alert("Ocurrió un error al reservar 😢");
+    }
   };  
-
-  try {
-    const res = await fetch("http://localhost:3010/reservar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reserva),
-    });
-
-    const data = await res.json();
-    alert(data.mensaje);
-  } catch (err) {
-    console.error("Error al reservar", err);
-    alert("Ocurrió un error 😢");
-  }
-};
-
 
   return (
     <div className="background-proyecto">
@@ -67,7 +67,7 @@ export default function Reservas() {
             Teléfono:
             <input type="tel" id="telefono" required value={telefono} onChange={e => setTelefono(e.target.value)} />
           </label>
-          <button className = "button-proyecto" type="submit" onClick={handleReservar}>Reservar</button>
+          <button className = "button-proyecto" type="submit">Reservar</button> {/**onClick={handleReservar} */}
         </form>
       </section>
 

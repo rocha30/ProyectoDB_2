@@ -9,6 +9,11 @@ import {
 
 const router = express.Router();
 
+// Ruta raíz de /api
+router.get('/', (req, res) => {
+    res.send('¡Ruta /api funcionando!');
+  });
+
 // Endpoint para obtener todos los clientes
 router.get('/clientes', obtenerClientes);
 
@@ -20,8 +25,6 @@ router.get('/asientos-disponibles', obtenerAsientosDisponibles);
 
 // Endpoint para reservar un asiento (nivel de aislamiento opcional)
 router.post('/reservar-asiento', reservarAsiento);
-
-
 
 //exportamos el router para usarlo en otros archivos
 export default router;
