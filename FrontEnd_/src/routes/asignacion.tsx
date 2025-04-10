@@ -1,6 +1,6 @@
 import "../asignacion.css";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 export default function Asignacion() {
   const navigate = useNavigate();
@@ -29,16 +29,29 @@ export default function Asignacion() {
   
     if (!recinto) return;
   
+    // Sumar precio base del recinto
+    precio += precioRecintos[recinto];
+  
+    // Sumar adicional por tipo
     if (tipo === "VIP") {
-      precio = numero === "Número 1" ? 150 : 250;
-    } else {
-      precio = 100;
+      precio += 50;
     }
   
-    // Sumamos precio del recinto
-    precio += precioRecintos[recinto];
+    // Sumar adicional por fila
+    if (fila === "Fila 1") {
+      precio += 30;
+    } else if (fila === "Fila 2") {
+      precio += 20;
+    }
+  
     setTotal(precio);
-  };
+  };  
+
+  useEffect(() => {
+    if (recintoSeleccionado) {
+      calcularTotal(recintoSeleccionado);
+    }
+  }, [fila, numero, tipo, recintoSeleccionado]);
 
   return (
     <div className="background-asignacion">
@@ -59,16 +72,25 @@ export default function Asignacion() {
           <div className="recintos">
             <div className="recinto">
               <p>Recinto A</p>
-              <button className="btn-obtener1">Obtener</button>
+              <button
+                className="btn-obtener1"
+                onClick={() => asignarRecinto("A")}
+              >
+                Obtener
+              </button>
             </div>
             <p className="precio">Q250</p>
 
             <div className="recinto">
               <p>Recinto B</p>
-              <button className="btn-obtener2">Obtener</button>
+              <button
+                className="btn-obtener2"
+                onClick={() => asignarRecinto("B")}
+              >
+                Obtener
+              </button>
             </div>
             <p className="precio">Q150</p>
-
           </div>
         </div>
       </div>
@@ -77,27 +99,92 @@ export default function Asignacion() {
       <div className="asientos-card">
         <h3>Asientos</h3>
         <div className="selectores-asientos">
-          <select>
+          <select value={fila} onChange={(e) => setFila(e.target.value)}>
             <option>Fila 1</option>
             <option>Fila 2</option>
             <option>Fila 3</option>
           </select>
-          <select>
+          <select value={numero} onChange={(e) => setNumero(e.target.value)}>
             <option>Número 1</option>
             <option>Número 2</option>
             <option>Número 3</option>
           </select>
-          <select>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
             <option>General</option>
             <option>VIP</option>
           </select>
         </div>
       </div>
 
+      {/* Precios */}
+      <div className="tabla-precios">
+        <h3>Precios</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Recinto A</td>
+              <td>Q250</td>
+            </tr>
+            <tr>
+              <td>Recinto B</td>
+              <td>Q150</td>
+            </tr>
+            <tr>
+              <td>Fila 1</td>
+              <td>+Q30</td>
+            </tr>
+            <tr>
+              <td>Fila 2</td>
+              <td>+Q20</td>
+            </tr>
+            <tr>
+              <td>Fila 3</td>
+              <td>+Q0</td>
+            </tr>
+            <tr>
+              <td>Tipo VIP</td>
+              <td>+Q50</td>
+            </tr>
+            <tr>
+              <td>Tipo General</td>
+              <td>+Q0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       {/* Total y Reservar */}
       <div className="total-reserva">
-        <p><strong>Total</strong><br />0.00 GTQ</p>
-        <button className="btn-reservar" onClick={() => navigate("/reservas")}>Reservar &gt;</button>
+        <p>
+          <strong>Total</strong>
+          <br />
+          Q{total}
+        </p>
+        <p className="warning"> *El precio está basado en la fila seleccionada y en si es General o VIP* </p>
+        <button
+          className="btn-reservar"
+          onClick={() =>
+            navigate("/reservas", {
+              state: {
+                idUsuario: 1, // o el ID real del usuario logueado
+                idEvento: 2,
+                fila,
+                numero,
+                tipo,
+                total,
+                recinto: recintoSeleccionado, // Pasamos el recinto seleccionado también
+              },
+            })
+          }
+        >
+          Reservar &gt;
+        </button>
       </div>
     </div>
   );
