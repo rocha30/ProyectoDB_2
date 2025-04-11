@@ -124,11 +124,11 @@ export default function Asignacion() {
             <option>Fila 7</option>
           </select>
           <select value={numero} onChange={(e) => setNumero(e.target.value)}>
-            <option>Asiento 1</option>
-            <option>Asiento 2</option>
-            <option>Asiento 3</option>
-            <option>Asiento 4</option>
-            <option>Asiento 5</option>
+            {Array.from({ length: 100 }, (_, i) => (
+              <option key={i + 1} value={`Asiento ${i + 1}`}>
+                Asiento {i + 1}
+              </option>
+            ))}
           </select>
           <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
             <option>General</option>

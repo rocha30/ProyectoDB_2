@@ -87,6 +87,15 @@ export async function reservarAsiento(req, res) {
       if (asientoReservado) {
         console.log(`🛑 Asiento ${idAsiento} ya está reservado en otro evento.`);
         throw new Error('Asiento ya reservado');
+      } 
+
+      // ✅ Obtener datos del asiento actual
+      const asientoActual = await tx.asiento.findUnique({
+        where: { id_asiento: idAsiento },
+      });
+
+      if (!asientoActual) {
+        throw new Error(`El asiento con id ${idAsiento} no existe.`);
       }
 
       // 🔄 Verificar si ya existe una reserva con esa fila, número y tipo para el evento
@@ -102,6 +111,7 @@ export async function reservarAsiento(req, res) {
           }
         }
       });
+
 
       if (asientoYaReservado) {
         throw new Error(`El asiento fila ${asientoActual.fila}, número ${asientoActual.numero_asiento}, tipo ${asientoActual.tipo} ya está reservado para este evento.`);
