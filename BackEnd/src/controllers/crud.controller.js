@@ -81,14 +81,30 @@ export async function reservarAsiento(req, res) {
 
     await prisma.$transaction(async (tx) => {
       const asientoReservado = await tx.reserva_asiento.findFirst({
-        where: { 
-          id_asiento: idAsiento
-         }
+        where: { id_asiento: idAsiento }
       });
 
       if (asientoReservado) {
-        console.log('🛑 Asiento ${idAsiento} ya está reservado');
+        console.log(`🛑 Asiento ${idAsiento} ya está reservado en otro evento.`);
         throw new Error('Asiento ya reservado');
+      }
+
+      // 🔄 Verificar si ya existe una reserva con esa fila, número y tipo para el evento
+      const asientoYaReservado = await tx.reserva_asiento.findFirst({
+        where: {
+          reserva: {
+            id_evento: idEvento
+          },
+          asiento: {
+            fila: asientoActual.fila,
+            numero_asiento: asientoActual.numero_asiento,
+            tipo: asientoActual.tipo
+          }
+        }
+      });
+
+      if (asientoYaReservado) {
+        throw new Error(`El asiento fila ${asientoActual.fila}, número ${asientoActual.numero_asiento}, tipo ${asientoActual.tipo} ya está reservado para este evento.`);
       }
 
       const nuevaReserva = await tx.reserva.create({
@@ -118,7 +134,7 @@ export async function reservarAsiento(req, res) {
       data: {
         id_reserva: nuevaReservaId,
         accion: 'Reserva exitosa',
-        descripcion: 'Cliente ${idCliente} reservó el asiento ${idAsiento}'
+        descripcion: `Cliente ${idCliente} reservó el asiento ${idAsiento}`
       },
     });
 
@@ -127,12 +143,12 @@ export async function reservarAsiento(req, res) {
   } catch (error) {
     console.error('Error en la reserva:', error.message);
 
-    // ✅ Registrar error en bitácora
+    // Registrar error en bitácora
     await prisma.bitacora.create({
       data: {
         id_reserva: null,
         accion: 'Error en reserva',
-        descripcion: 'Cliente ${idCliente} falló al reservar el asiento ${idAsiento}: ${error.message}'
+        descripcion: `Cliente ${idCliente} falló al reservar el asiento ${idAsiento}: ${error.message}`
       },
     });
 
