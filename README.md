@@ -1,43 +1,73 @@
-# Proyecto 2 — Simulación de Reservas Concurrentes
+# Proyecto de Simulación de Reservas Concurrentes
 
-## 📚 Descripción
-
-Este proyecto simula un sistema de reservas concurrentes para eventos.  
-La base de datos está diseñada para gestionar:
-
-- Eventos
-- Recintos
-- Asientos
-- Clientes
-- Reservas
-- Registro de actividad mediante la Bitácora
-
-La estructura está preparada para realizar pruebas de concurrencia utilizando Node.js, PostgreSQL y múltiples hilos o procesos simulados.
+Este proyecto consiste en la simulación de un sistema de reservas concurrentes para eventos, desarrollado como parte de la clase de **Base de Datos 1**.  
+La aplicación utiliza **Node.js**, **PostgreSQL**, y **Prisma** para realizar operaciones sobre una base de datos de reservas de asientos.
 
 ---
 
-## 🗂️ Estructura de la carpeta `/database`
+## 📂 Estructura del proyecto
 
-| Archivo | Descripción |
-|---------|-------------|
-| `ddl.sql` | Script de creación de las tablas y relaciones de la base de datos. |
-| `data.sql` | Script de carga de datos iniciales: recintos, evento ULTRA MIAMI, asientos, clientes, reservas iniciales y registros manuales en la bitácora. |
-| `reset.sql` | Limpia la base de datos eliminando todas las tablas para reiniciar desde cero. |
-| `init.sql` | Automatiza el flujo: ejecuta `reset.sql`, luego `ddl.sql` y finalmente `data.sql`. Te deja la base lista para hacer pruebas. |
+ProyectoDB_2/ ├── BackEnd/ # Backend Node.js con Express y Prisma │ ├── src/ │ │ ├── controllers/ # Lógica de operaciones CRUD │ │ ├── routes/ # Definición de rutas API │ │ ├── app.js # Configuración y arranque de la app │ │ └── prisma.js # Configuración de conexión a PostgreSQL ├── ddl.sql # Script de creación de tablas ├── data.sql # Script de inserción de datos iniciales ├── init.sql # Script para inicializar la base de datos completa ├── reset.sql # Script para limpiar la base de datos ├── package.json # Dependencias de Node.js └── README.md # Documentación del proyecto
+
 
 ---
 
-## 🚀 Cómo usar los archivos SQL
+## ⚙️ Tecnologías utilizadas
 
-### 1️⃣ Paso 1: Inicializar base de datos limpia
+- **Node.js**
+- **Express.js**
+- **Prisma ORM**
+- **PostgreSQL**
 
-Desde la terminal, estando dentro de la carpeta `/database`, ejecuta:
+---
+
+## 🗃️ Descripción de archivos SQL
+
+- **ddl.sql**:  
+  Crea todas las tablas necesarias (`clientes`, `asientos`, `reservas`, `bitácora`).
+
+- **data.sql**:  
+  Inserta datos de prueba para simular clientes, asientos disponibles y reservas iniciales.
+
+- **reset.sql**:  
+  Limpia la base de datos eliminando todos los registros existentes.
+
+- **init.sql**:  
+  Ejecuta `ddl.sql` + `data.sql` para inicializar la base de datos desde cero.
+
+---
+
+## 🚀 Instalación y ejecución
+
+### Requisitos previos
+
+- Node.js instalado
+- PostgreSQL instalado y configurado
+
+### Pasos para ejecutar:
+
+1. **Clona el repositorio:**
 
 ```bash
-psql -U tu_usuario -d tu_basededatos -f init.sql
+git clone https://github.com/rocha30/ProyectoDB_2.git
+cd ProyectoDB_2
+Instala las dependencias de Node.js:
+npm install
+Configura la base de datos:
+Crea una base de datos PostgreSQL vacía.
+Actualiza la conexión en el archivo BackEnd/src/prisma.js si es necesario.
+Inicializa la base de datos ejecutando:
+psql -U tu_usuario -d tu_base_de_datos -f init.sql
+Ejecuta la aplicación Node.js:
+node BackEnd/src/app.js
+La API estará disponible en:
+http://localhost:3000
+🧩 Funcionalidades del proyecto
 
-
-verificar las entidades creadas se puede ejecutar
-psql -U tu_usuario -d tu_basededatos
-\dt
-
+CRUD para:
+Clientes
+Asientos
+Reservas
+Bitácora de operaciones
+Simulación de concurrencia mediante múltiples solicitudes simultáneas (puedes probar usando herramientas como Postman o mediante scripts de prueba).
+```
