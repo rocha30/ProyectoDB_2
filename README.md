@@ -61,7 +61,7 @@ psql -U tu_usuario -d tu_base_de_datos -f init.sql
 Ejecuta la aplicación Node.js:
 node BackEnd/src/app.js
 La API estará disponible en:
-http://localhost:3000
+http://localhost:3010
 🧩 Funcionalidades del proyecto
 
 CRUD para:
