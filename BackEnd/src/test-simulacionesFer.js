@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import { performance } from 'perf_hooks';
 
 const simulaciones = [5, 10, 20, 30];
-const isolationLevel = 'Serializable'; // Puedes cambiar a 'Serializable' si quieres
+const isolationLevel = 'ReadCommitted'; // Puedes cambiar a 'Serializable' si quieres
 
 function correrSimulacion(usuarios) {
   return new Promise((resolve) => {
@@ -18,26 +18,19 @@ function correrSimulacion(usuarios) {
         return resolve();
       }
 
-      let resumen;
-      try {
-        const lineas = stdout.trim().split('\n');
-        const ultimaLinea = lineas[lineas.length - 1];
-        resumen = JSON.parse(ultimaLinea);
-      } catch (err) {
-        console.error('⚠️ No se pudo leer resumen JSON del simulador.');
-        resumen = { exitosas: 0, fallidas: 0 };
-      }
+      // Contar éxitos y fallos en base al output del simulador
+      const exitos = (stdout.match(/🟢 Usuario/g) || []).length;
+      const fallos = (stdout.match(/🔴 Usuario/g) || []).length;
 
       console.log(stdout);
-      console.log(`✅ Reservas exitosas: ${resumen.exitosas}`);
-      console.log(`❌ Reservas fallidas: ${resumen.fallidas}`);
+      console.log(`✅ Reservas exitosas: ${exitos}`);
+      console.log(`❌ Reservas fallidas: ${fallos}`);
       console.log(`⏱️ Tiempo de ejecución: ${duracionSegundos} segundos`);
 
       resolve();
     });
   });
 }
-
 
 async function correrTodasSimulaciones() {
   for (const usuarios of simulaciones) {
